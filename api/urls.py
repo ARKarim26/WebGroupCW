@@ -21,5 +21,7 @@ from django.http import HttpResponse
 from .views import main_spa
 
 urlpatterns = [
-    path('', main_spa),
+    path('', main_spa),  # Root URL to serve the main SPA
+    path('admin/', admin.site.urls),  # URL for Django admin interface
+    path('api/', include('api.urls')),  # Include URLs from your 'api' app
 ]
