@@ -13,15 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
-from django.contrib import admin
-from django.urls import include, path
-from django.http import HttpResponse
-
-from .views import main_spa
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', main_spa),  # Root URL to serve the main SPA
-    path('admin/', admin.site.urls),  # URL for Django admin interface
-    path('api/', include('api.urls')),  # Include URLs from your 'api' app
+    # Endpoint for the main SPA
+    path('', views.main_spa, name='main_spa'),
+
+    # Endpoints for articles
+    path('articles/', views.article_list, name='article_list'),
+    path('articles/<int:article_id>/', views.article_detail, name='article_detail'),
+    path('articles/category/<int:category_id>/', views.articles_by_category, name='articles_by_category'),
+
+    # Endpoint for categories
+    path('categories/', views.category_list, name='category_list'),
+
+    # Endpoints for user profile
+    path('user/profile/', views.user_profile, name='user_profile'),
+
+    # Endpoint for posting a comment
+    path('articles/<int:article_id>/comment/', views.post_comment, name='post_comment'),
 ]

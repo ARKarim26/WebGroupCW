@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import include, path
 from django.http import HttpResponse
 
+from api.views import main_spa  # Ensure you import main_spa correctly from your api app
 
 urlpatterns = [
-    path('', include('api.urls')),
-    path('health', lambda request: HttpResponse("OK")),
-    path('admin/', admin.site.urls),
+    path('', main_spa, name='main_spa'),  # Root URL to serve the main SPA
+    path('health/', lambda request: HttpResponse("OK")),  # Health check URL
+    path('admin/', admin.site.urls),  # URL for Django admin interface
+    path('api/', include('api.urls')),  # Include URLs from your 'api' app
 ]
