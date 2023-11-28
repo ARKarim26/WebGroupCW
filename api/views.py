@@ -14,6 +14,9 @@ def main_spa(request: HttpRequest) -> HttpResponse:
 
 @csrf_exempt # there is an option to use {% csrf_token %} in the form template instead which is how you're meant to do it, we need to discuss as a group
 def register(request):
+    """
+    API view to handle user registration
+    """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -24,22 +27,34 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form})
 
-@csrf_exempt 
+@csrf_exempt
 def login_view(request):
+    """
+    API view to manage user login.
+    """
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        # Load JSON data from the request body
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('main_spa') # fareza you can change these redirects to wherever you want them to go
+            # Return JSON response on successful login
+            return JsonResponse({'message': 'Login successful'}, status=200)
         else:
-            # Handle login error
-            pass
-    return render(request, 'login.html')
+            # Return error message if authentication fails
+            return JsonResponse({'error': 'Invalid username or password'}, status=400)
+
+    # Return a JSON response for non-POST requests
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @csrf_exempt
 def logout_view(request):
+    """
+    API view to handle user logout
+    """
     auth_logout(request)
     return redirect('main_spa') #redirect
 

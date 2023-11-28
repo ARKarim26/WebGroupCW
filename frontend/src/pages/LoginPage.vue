@@ -1,20 +1,22 @@
 <template>
-    <br>
-    <div class="h3">
-      {{ title }}
-    </div>
+  <div class="login-container">
+    <h3>{{ title }}</h3>
 
     <form @submit.prevent="login">
-      <label for="username">Username:</label>
-      <input type="text" id="username" v-model="username" required />
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" v-model="username" required />
+      </div>
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" v-model="password" required />
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" v-model="password" required />
+      </div>
 
       <button type="submit">Login</button>
     </form>
-
-  </template>
+  </div>
+</template>
   
   <script lang="ts">
       import { defineComponent } from "vue";
@@ -27,13 +29,31 @@
                   password: "",
               }
           },
-          methods: {
-            login() {
-            // implementation needs to be written 
-            console.log("Username:", this.username);
-            console.log("Password:", this.password);
-            },
-        },
+          mmethods: {
+    async login() {
+      try {
+        const response = await fetch('/login/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            'username': this.username,
+            'password': this.password
+          })
+        });
+
+        if (response.ok) {
+          this.$router.push({ name: 'Main Page' });
+        } else {
+          console.error('Login failed');
+          // Handle login failure
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    },
+  },
       })
   </script>
   
