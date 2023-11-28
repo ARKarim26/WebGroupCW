@@ -29,19 +29,19 @@
                   password: "",
               }
           },
-          mmethods: {
-    async login() {
-      try {
-        const response = await fetch('/login/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            'username': this.username,
-            'password': this.password
-          })
-        });
+          methods: {
+          async login() {
+            try {
+              const response = await fetch('/login/', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                  'username': this.username,
+                  'password': this.password
+                })
+              });
 
         if (response.ok) {
           this.$router.push({ name: 'Main Page' });
