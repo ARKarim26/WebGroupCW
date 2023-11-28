@@ -1,4 +1,7 @@
 from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from .models import Article, Comment, User, Category
@@ -8,6 +11,38 @@ import json
 
 def main_spa(request: HttpRequest) -> HttpResponse:
     return render(request, 'api/spa/index.html', {})
+
+@csrf_exempt # there is an option to use {% csrf_token %} in the form template instead which is how you're meant to do it, we need to discuss as a group
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth_login(request, user)
+            return redirect('main_spa') # redirect
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
+
+@csrf_exempt 
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('main_spa') # fareza you can change these redirects to wherever you want them to go
+        else:
+            # Handle login error
+            pass
+    return render(request, 'login.html')
+
+@csrf_exempt
+def logout_view(request):
+    auth_logout(request)
+    return redirect('main_spa') #redirect
+
 
 def article_list(request):
     """
