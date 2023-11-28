@@ -30,6 +30,16 @@ def article_detail(request, article_id):
     }
     return JsonResponse(article_data)
 
+@login_required
+def filtered_articles(request):
+    """
+    API view to display a list of news articles filtered by user's favorite categories.
+    """
+    user = request.user
+    favorite_categories = user.favorite_categories.all()
+    articles = Article.objects.filter(category__in=favorite_categories).values('id', 'title', 'category__name', 'author_name')
+    return JsonResponse({'articles': list(articles)}, safe=False)
+
 def category_list(request):
     """
     API view to display a list of news categories.
@@ -52,33 +62,45 @@ def user_profile(request):
     """
     user = request.user
     if request.method == "GET":
+        favorite_categories_ids = user.favorite_categories.values_list('id', flat=True)
         user_data = {
             'username': user.username,
             'email': user.email,
             'birth_date': user.birth_date,
-            'profile_image': user.profile_image.url if user.profile_image else None
+            'profile_image': user.profile_image.url if user.profile_image else None,
+            'favorite_categories': list(favorite_categories_ids),
         }
         return JsonResponse(user_data)
+
     elif request.method == "POST":
         data = json.loads(request.body)
         user.email = data.get('email', user.email)
         user.birth_date = data.get('birth_date', user.birth_date)
+        # Update favorite categories if provided
+        if 'favorite_categories' in data:
+            favorite_categories = data['favorite_categories']
+            user.favorite_categories.set(favorite_categories)
         # Handle profile image update here if necessary
         user.save()
         return JsonResponse({'message': 'Profile updated successfully'})
 
 @csrf_exempt
 @login_required
-def post_comment(request, article_id):
+def post_comment(request, article_id, parent_comment_id=None):
     """
-    API view for posting a comment on a news article.
+    API view for posting a comment on a news article or replying to a comment.
     """
-    if request.method == "POST":
-        article = get_object_or_404(Article, id=article_id)
-        data = json.loads(request.body)
-        comment_content = data.get('comment')
+    article = get_object_or_404(Article, id=article_id)
+    data = json.loads(request.body)
+    comment_content = data.get('comment')
+
+    if parent_comment_id:
+        parent_comment = get_object_or_404(Comment, id=parent_comment_id)
+        Comment.objects.create(article=article, author=request.user, content=comment_content, parent_comment=parent_comment)
+    else:
         Comment.objects.create(article=article, author=request.user, content=comment_content)
-        return JsonResponse({'message': 'Comment added successfully'})
+
+    return JsonResponse({'message': 'Comment added successfully'})
 
 @csrf_exempt
 @login_required

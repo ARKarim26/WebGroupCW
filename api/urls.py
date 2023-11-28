@@ -24,6 +24,7 @@ urlpatterns = [
     path('articles/', views.article_list, name='article_list'),
     path('articles/<int:article_id>/', views.article_detail, name='article_detail'),
     path('articles/category/<int:category_id>/', views.articles_by_category, name='articles_by_category'),
+    path('articles/filtered/', views.filtered_articles, name='filtered_articles'),
 
     # Endpoint for categories
     path('categories/', views.category_list, name='category_list'),
@@ -31,8 +32,9 @@ urlpatterns = [
     # Endpoints for user profile
     path('user/profile/', views.user_profile, name='user_profile'),
 
-    # Endpoint for posting,editing and deleting a comment
+    # Endpoint for posting,replying,editing and deleting comments
     path('articles/<int:article_id>/comment/', views.post_comment, name='post_comment'),
+    path('articles/<int:article_id>/comment/<int:parent_comment_id>/', views.post_comment, name='reply_comment'),
     path('edit-comment/<int:comment_id>/', views.edit_comment, name='edit_comment'),
     path('delete-comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 ]
