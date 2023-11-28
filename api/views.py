@@ -80,3 +80,31 @@ def post_comment(request, article_id):
         Comment.objects.create(article=article, author=request.user, content=comment_content)
         return JsonResponse({'message': 'Comment added successfully'})
 
+@csrf_exempt
+@login_required
+def edit_comment(request, comment_id):
+    """
+    API view to edit an existing comment.
+    """
+    if request.method == 'PUT':
+        comment = get_object_or_404(Comment, id=comment_id, author=request.user)
+        data = json.loads(request.body)
+        comment_content = data.get('comment')
+        comment.content = comment_content
+        comment.save()
+        return JsonResponse({'message': 'Comment updated successfully'})
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@csrf_exempt
+@login_required
+def delete_comment(request, comment_id):
+    """
+    API view to delete an existing comment.
+    """
+    if request.method == 'DELETE':
+        comment = get_object_or_404(Comment, id=comment_id, author=request.user)
+        comment.delete()
+        return JsonResponse({'message': 'Comment deleted successfully'})
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)

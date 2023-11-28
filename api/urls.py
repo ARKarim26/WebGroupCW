@@ -31,6 +31,8 @@ urlpatterns = [
     # Endpoints for user profile
     path('user/profile/', views.user_profile, name='user_profile'),
 
-    # Endpoint for posting a comment
+    # Endpoint for posting,editing and deleting a comment
     path('articles/<int:article_id>/comment/', views.post_comment, name='post_comment'),
+    path('edit-comment/<int:comment_id>/', views.edit_comment, name='edit_comment'),
+    path('delete-comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 ]

@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.http import HttpResponse
+from django.conf.urls.static import static
 
 from api.views import main_spa  # Ensure you import main_spa correctly from your api app
 
@@ -26,3 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),  # URL for Django admin interface
     path('api/', include('api.urls')),  # Include URLs from your 'api' app
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
