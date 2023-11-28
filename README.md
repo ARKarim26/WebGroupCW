@@ -61,3 +61,46 @@ Once your project is ready to be deployed you will need to 'build' the Vue app a
 ## License
 
 This code is dedicated to the public domain to the maximum extent permitted by applicable law, pursuant to [CC0](http://creativecommons.org/publicdomain/zero/1.0/).
+
+
+Athish's version of read me:
+
+## Requirements
+- Python 3.10
+- Django 4.2
+- Node.js and npm (for Vue.js frontend)
+
+## Installation
+
+Clone the repository:
+git clone https://github.com/athi22/WebGroupCW
+cd cwgroup
+
+Set up a Python virtual environment and activate it (replace ecs639u-group with your environment name):
+Copy code:
+conda create --name ecs639u-group python=3.10
+conda activate ecs639u-group
+
+Install the required Python dependencies:
+Copy code:
+pip install -r requirements.txt
+
+Navigate to the frontend directory and install JavaScript dependencies:
+Copy code:
+cd frontend
+npm install
+
+Return to the project root directory, create, and apply database migrations:
+Copy code:
+cd ..
+python manage.py migrate
+
+Start the development server:
+Copy code
+python manage.py runserver
+Access the application at http://127.0.0.1:8000/
+
+Admin panel is available at http://127.0.0.1:8000/admin/ with the credentials:
+
+Username: admin
+Password: admin
