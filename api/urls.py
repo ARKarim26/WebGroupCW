@@ -20,6 +20,11 @@ urlpatterns = [
     # Endpoint for the main SPA
     path('', views.main_spa, name='main_spa'),
 
+    # Endpoints to register, login and logout
+    path('register/', views.register, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+
     # Endpoints for articles
     path('articles/', views.article_list, name='article_list'),
     path('articles/<int:article_id>/', views.article_detail, name='article_detail'),

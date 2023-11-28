@@ -1,13 +1,63 @@
 from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from .models import Article, Comment, User, Category
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
 import json
-
 
 def main_spa(request: HttpRequest) -> HttpResponse:
     return render(request, 'api/spa/index.html', {})
+
+@csrf_exempt # there is an option to use {% csrf_token %} in the form template instead which is how you're meant to do it, we need to discuss as a group
+def register(request):
+    """
+    API view to handle user registration
+    """
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth_login(request, user)
+            return redirect('main_spa') # redirect
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
+
+@csrf_exempt
+def login_view(request):
+    """
+    API view to manage user login.
+    """
+    if request.method == 'POST':
+        # Load JSON data from the request body
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            # Return JSON response on successful login
+            return JsonResponse({'message': 'Login successful'}, status=200)
+        else:
+            # Return error message if authentication fails
+            return JsonResponse({'error': 'Invalid username or password'}, status=400)
+
+    # Return a JSON response for non-POST requests
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@csrf_exempt
+def logout_view(request):
+    """
+    API view to handle user logout
+    """
+    auth_logout(request)
+    return redirect('main_spa') #redirect
+
 
 def article_list(request):
     """
@@ -57,32 +107,39 @@ def articles_by_category(request, category_id):
 @csrf_exempt
 @login_required
 def user_profile(request):
-    """
-    API view for the user's profile page. Handles both viewing and updating the profile.
-    """
     user = request.user
-    if request.method == "GET":
+
+    if request.method == 'GET':
         favorite_categories_ids = user.favorite_categories.values_list('id', flat=True)
         user_data = {
             'username': user.username,
             'email': user.email,
-            'birth_date': user.birth_date,
+            'birth_date': user.birth_date.isoformat() if user.birth_date else None,
             'profile_image': user.profile_image.url if user.profile_image else None,
             'favorite_categories': list(favorite_categories_ids),
         }
         return JsonResponse(user_data)
 
-    elif request.method == "POST":
-        data = json.loads(request.body)
-        user.email = data.get('email', user.email)
-        user.birth_date = data.get('birth_date', user.birth_date)
-        # Update favorite categories if provided
-        if 'favorite_categories' in data:
-            favorite_categories = data['favorite_categories']
-            user.favorite_categories.set(favorite_categories)
-        # Handle profile image update here if necessary
+    elif request.method == 'POST':
+        if request.content_type == 'application/json':
+            # Handle JSON data
+            data = json.loads(request.body)
+            user.email = data.get('email', user.email)
+            user.birth_date = data.get('birth_date', user.birth_date)
+            if 'favorite_categories' in data:
+                favorite_categories = data['favorite_categories']
+                user.favorite_categories.set(favorite_categories)
+        elif request.FILES.get('profile_image'):
+            # Handle file upload
+            file = request.FILES['profile_image']
+            file_name = default_storage.save(file.name, file)
+            user.profile_image = file_name
+
         user.save()
         return JsonResponse({'message': 'Profile updated successfully'})
+
+    else:
+        return HttpResponse(status=405)  # Method Not Allowed
 
 @csrf_exempt
 @login_required
