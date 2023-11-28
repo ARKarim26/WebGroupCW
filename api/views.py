@@ -6,8 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from .models import Article, Comment, User, Category
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
 import json
-
 
 def main_spa(request: HttpRequest) -> HttpResponse:
     return render(request, 'api/spa/index.html', {})
@@ -107,32 +107,39 @@ def articles_by_category(request, category_id):
 @csrf_exempt
 @login_required
 def user_profile(request):
-    """
-    API view for the user's profile page. Handles both viewing and updating the profile.
-    """
     user = request.user
-    if request.method == "GET":
+
+    if request.method == 'GET':
         favorite_categories_ids = user.favorite_categories.values_list('id', flat=True)
         user_data = {
             'username': user.username,
             'email': user.email,
-            'birth_date': user.birth_date,
+            'birth_date': user.birth_date.isoformat() if user.birth_date else None,
             'profile_image': user.profile_image.url if user.profile_image else None,
             'favorite_categories': list(favorite_categories_ids),
         }
         return JsonResponse(user_data)
 
-    elif request.method == "POST":
-        data = json.loads(request.body)
-        user.email = data.get('email', user.email)
-        user.birth_date = data.get('birth_date', user.birth_date)
-        # Update favorite categories if provided
-        if 'favorite_categories' in data:
-            favorite_categories = data['favorite_categories']
-            user.favorite_categories.set(favorite_categories)
-        # Handle profile image update here if necessary
+    elif request.method == 'POST':
+        if request.content_type == 'application/json':
+            # Handle JSON data
+            data = json.loads(request.body)
+            user.email = data.get('email', user.email)
+            user.birth_date = data.get('birth_date', user.birth_date)
+            if 'favorite_categories' in data:
+                favorite_categories = data['favorite_categories']
+                user.favorite_categories.set(favorite_categories)
+        elif request.FILES.get('profile_image'):
+            # Handle file upload
+            file = request.FILES['profile_image']
+            file_name = default_storage.save(file.name, file)
+            user.profile_image = file_name
+
         user.save()
         return JsonResponse({'message': 'Profile updated successfully'})
+
+    else:
+        return HttpResponse(status=405)  # Method Not Allowed
 
 @csrf_exempt
 @login_required
