@@ -12,7 +12,7 @@ import ProfilePage from '../pages/ProfilePage.vue';
 let base = (import.meta.env.MODE == 'development') ? import.meta.env.BASE_URL : ''
 
 // 2. Define some routes
-// Each route should map to a component.
+// Each route should map to a compo`nent.
 // We'll talk about nested routes later.
 const router = createRouter({
     history: createWebHistory(base),
