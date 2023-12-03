@@ -1,18 +1,15 @@
 <template>
-  <div class="login-container">
-    <h3>{{ title }}</h3>
-
+  <div>
+    <h3>Login</h3>
     <form @submit.prevent="login">
       <div>
         <label for="username">Username:</label>
-        <input type="text" id="username" v-model="username" required />
+        <input type="text" id="username" v-model="username" required>
       </div>
-
       <div>
         <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required />
+        <input type="password" id="password" v-model="password" required>
       </div>
-
       <button type="submit">Login</button>
     </form>
   </div>
