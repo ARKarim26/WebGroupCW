@@ -14,62 +14,42 @@
     </form>
   </div>
 </template>
-  
-  <script lang="ts">
-      import { defineComponent } from "vue";
-  
-      export default defineComponent({
-          data() {
-              return {
-                  title: "Login Page",
-                  username: "",
-                  password: "",
-              }
-          },
-          methods: {
-          async login() {
-            try {
-              const response = await fetch('/login/', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                  'username': this.username,
-                  'password': this.password
-                })
-              });
 
-        if (response.ok) {
-          this.$router.push({ name: 'Main Page' });
-        } else {
-          console.error('Login failed');
-          // Handle login failure
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
+<script lang="ts">
+  import { defineComponent } from "vue";
+
+  export default defineComponent({
+    data() {
+      return {
+        username: "",
+        password: "",
+      };
     },
-  },
-      })
-  </script>
-  
-  <style scoped>
-  .login-container {
-    max-width: 300px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  label {
-    font-weight: bold;
-  }
-  </style>
+    methods: {
+      async login() {
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/login/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: this.username,
+              password: this.password
+            })
+          });
+
+          if (response.ok) {
+            console.log('Login successful');
+            this.$router.push({ name: 'Main Page' });
+          } else {
+            console.error('Login failed: ', response.status, response.statusText);
+            // Handle login failure
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      },
+    },
+  });
+</script>
