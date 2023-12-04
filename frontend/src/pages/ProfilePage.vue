@@ -84,11 +84,14 @@ export default defineComponent({
         })
         .catch((error) => console.error("Error fetching categories:", error));
     },
-    handleImageChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('profile_image', file);
+    handleImageChange(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.files) return;
+
+  const file = input.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('profile_image', file);
 
         fetch('/api/user/profile/', {
           method: 'POST',

@@ -8,24 +8,43 @@ from .models import Article, Comment, User, Category
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 import json
+from django.core.files.base import ContentFile
+import base64
+import datetime
 
 def main_spa(request: HttpRequest) -> HttpResponse:
     return render(request, 'api/spa/index.html', {})
 
-@csrf_exempt # there is an option to use {% csrf_token %} in the form template instead which is how you're meant to do it, we need to discuss as a group
+@csrf_exempt
 def register(request):
-    """
-    API view to handle user registration
-    """
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+        # Parse JSON data for username, password, and birth date
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        birth_date = data.get('birth_date')
+
+        # Create user
+        try:
+            user = User.objects.create_user(username=username, password=password)
+            if birth_date:
+                user.birth_date = datetime.datetime.strptime(birth_date, '%Y-%m-%d').date()
+            user.save()
+
+            # Handle profile image if present
+            if 'profile_image' in data:
+                format, imgstr = data['profile_image'].split(';base64,')
+                ext = format.split('/')[-1]
+
+                file = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                user.profile_image.save(name=f'{username}.{ext}', content=file, save=True)
+
             auth_login(request, user)
-            return redirect('main_spa') # redirect
+            return JsonResponse({'status': 'success', 'message': 'User registered successfully'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     else:
-        form = UserCreationForm()
-    return render(request, 'register.html', {'form': form})
+        return JsonResponse({'status': 'error', 'message': 'Only POST method is allowed'}, status=405)
 
 @csrf_exempt
 def login_view(request):

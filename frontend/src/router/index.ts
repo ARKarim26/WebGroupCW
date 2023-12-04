@@ -5,9 +5,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 // 1. Define route components.
 // These can be imported from other files
 import MainPage from '../pages/MainPage.vue';
-import OtherPage from '../pages/OtherPage.vue';
 import LoginPage from '../pages/LoginPage.vue'; 
 import ProfilePage from '../pages/ProfilePage.vue';
+import RegisterPage from '../pages/RegisterPage.vue';
+
 
 let base = (import.meta.env.MODE == 'development') ? import.meta.env.BASE_URL : ''
 
@@ -18,7 +19,7 @@ const router = createRouter({
     history: createWebHistory(base),
     routes: [
         { path: '/', name: 'Main Page', component: MainPage },
-        { path: '/other/', name: 'Other Page', component: OtherPage },
+        { path: '/register', name: 'Register', component: RegisterPage },
         { path: '/login/', name: 'Login Page', component: LoginPage },
         { path: '/profile/', name: 'Profile Page', component: ProfilePage },
     ]
