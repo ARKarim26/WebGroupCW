@@ -1,35 +1,28 @@
 import { defineStore } from 'pinia';
 
-interface User {
-  username: string;
-  email: string;
-  birthDate?: string;
-  profileImage?: string;
-}
-
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore('userStore', {
   state: () => ({
-    isLoggedIn: false,
-    userData: null as User | null,
+    username: '',
+    email: '',
+    birthDate: '',
+    profileImage: '',
+    favoriteCategories: [] as number[],
+    isLoggedIn: false
   }),
   actions: {
-    logIn(userData: User) {
+    setUserProfile(userData: { username: string, email: string, birthDate: string, profileImage: string, favoriteCategories: number[] }) {
+      this.username = userData.username;
+      this.email = userData.email;
+      this.birthDate = userData.birthDate;
+      this.profileImage = userData.profileImage;
+      this.favoriteCategories = userData.favoriteCategories;
+    },
+    loginUser(userData: { username: string, email: string, birthDate: string, profileImage: string, favoriteCategories: number[] }) {
+      this.setUserProfile(userData);
       this.isLoggedIn = true;
-      this.userData = userData;
     },
-    logOut() {
-      this.isLoggedIn = false;
-      this.userData = null;
-    },
-    async fetchUserProfile() {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/user/profile/');
-        if (!response.ok) throw new Error('Failed to fetch user profile');
-        const data = await response.json();
-        this.logIn(data);
-      } catch (error) {
-        console.error('Error:', error);
-      }
+    logoutUser() {
+      this.$reset(); // Resets the store to its initial state
     }
-  },
+  }
 });

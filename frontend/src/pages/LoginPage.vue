@@ -11,45 +11,39 @@
         <input type="password" id="password" v-model="password" required>
       </div>
       <button type="submit">Login</button>
+      <p v-if="errorMessage">{{ errorMessage }}</p>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-  import { defineComponent } from "vue";
+import { defineComponent, ref } from 'vue';
+import { useUserStore } from '../store/userStore';
+import { useRouter } from 'vue-router';
 
-  export default defineComponent({
-    data() {
-      return {
-        username: "",
-        password: "",
-      };
-    },
-    methods: {
-      async login() {
-        try {
-          const response = await fetch('http://127.0.0.1:8000/api/login/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              username: this.username,
-              password: this.password
-            })
-          });
+export default defineComponent({
+  setup() {
+    const userStore = useUserStore();
+    const router = useRouter();
+    const username = ref('');
+    const password = ref('');
+    const errorMessage = ref('');
 
-          if (response.ok) {
-            console.log('Login successful');
-            this.$router.push({ name: 'Main Page' });
-          } else {
-            console.error('Login failed: ', response.status, response.statusText);
-            // Handle login failure
-          }
-        } catch (error) {
-          console.error('Error:', error);
+    const login = async () => {
+      try {
+        await userStore.login(username.value, password.value);
+        if (userStore.isLoggedIn) {
+          router.push({ name: 'Main Page' });
+        } else {
+          errorMessage.value = 'Login failed';
         }
-      },
-    },
-  });
+      } catch (error) {
+        console.error('Error during login:', error);
+        errorMessage.value = 'Login failed. Please try again.';
+      }
+    };
+
+    return { username, password, login, errorMessage };
+  },
+});
 </script>
