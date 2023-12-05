@@ -1,13 +1,15 @@
 <template>
-    <div v-if="article.data">
-      <h2>{{ article.data.title }}</h2>
-      <p>{{ article.data.content }}</p>
+    <div v-if="article">
+      <h2>{{ article.title }}</h2>
+      <p>{{ article.content }}</p>
+      <p>Author: {{ article.author }}</p> <!-- Display the author -->
       <h3>Comments</h3>
-      <ul>
-        <li v-for="comment in article.data.comments" :key="comment.id">
+      <ul v-if="article.comments && article.comments.length > 0">
+        <li v-for="comment in article.comments" :key="comment.id">
           {{ comment.content }} - by {{ comment.author }}
         </li>
       </ul>
+      <p v-else>No comments yet.</p>
     </div>
     <div v-else>
       <p>Article not found or loading...</p>
@@ -15,7 +17,7 @@
   </template>
   
   <script lang="ts">
-  import { defineComponent, onMounted, reactive } from 'vue';
+  import { defineComponent, onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
   
   interface Article {
@@ -35,14 +37,20 @@
   export default defineComponent({
     setup() {
       const route = useRoute();
-      const article = reactive<{ data: Article | null }>({ data: null });
+      const article = ref<Article | null>(null);
   
       const fetchArticle = async () => {
+        const articleId = route.params.id;
+        if (!articleId) {
+          console.error('Article ID not provided');
+          return;
+        }
+  
         try {
-          const response = await fetch(`/api/articles/${route.params.id}/`);
+          const response = await fetch(`http://127.0.0.1:8000/api/articles/${articleId}/`);
           if (!response.ok) throw new Error('Failed to fetch article');
           const data = await response.json();
-          article.data = data;
+          article.value = data;
         } catch (error) {
           console.error('Error:', error);
         }
@@ -56,15 +64,6 @@
   </script>
   
   <style scoped>
-  h3 {
-    margin-top: 2rem;
-  }
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  li {
-    margin: 0.5rem 0;
-  }
+  /* Add styles as needed */
   </style>
   

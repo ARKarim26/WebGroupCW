@@ -20,6 +20,7 @@ import { defineComponent, onMounted, reactive } from 'vue';
 interface Article {
   id: number;
   title: string;
+  author_name: string;
   category_name: string;
 }
 
@@ -35,7 +36,7 @@ export default defineComponent({
 
     const fetchArticles = async () => {
       try {
-        const response = await fetch('/api/articles/');
+        const response = await fetch('http://127.0.0.1:8000/api/articles/');
         if (!response.ok) throw new Error('Failed to fetch articles');
         const data = await response.json();
         // Group articles by category
@@ -52,7 +53,7 @@ export default defineComponent({
 
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/categories/');
+        const response = await fetch('http://127.0.0.1:8000/api/categories/');
         if (!response.ok) throw new Error('Failed to fetch categories');
         categories.push(...(await response.json()));
       } catch (error) {
