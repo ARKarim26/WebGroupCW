@@ -5,9 +5,6 @@ from django.shortcuts import get_object_or_404
 from .models import Article, Comment, User, Category
 from django.views.decorators.csrf import csrf_exempt
 import json
-import datetime
-from django.core.files.base import ContentFile
-import base64
 
 def main_spa(request):
     return HttpResponse('Main SPA Page')
@@ -15,7 +12,6 @@ def main_spa(request):
 @csrf_exempt
 def register(request):
     if request.method == 'POST':
-        # For FormData, access data via request.POST and request.FILES
         username = request.POST.get('username')
         password = request.POST.get('password')
         birth_date = request.POST.get('birth_date')
@@ -34,7 +30,7 @@ def register(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     else:
         return JsonResponse({'status': 'error', 'message': 'Only POST method is allowed'}, status=405)
-        
+
 @csrf_exempt
 def login_view(request):
     if request.method == 'POST':
@@ -89,6 +85,7 @@ def articles_by_category(request, category_id):
 @login_required
 def user_profile(request):
     user = request.user
+
     if request.method == 'GET':
         favorite_categories_ids = user.favorite_categories.values_list('id', flat=True)
         user_data = {
@@ -99,10 +96,13 @@ def user_profile(request):
             'favorite_categories': list(favorite_categories_ids),
         }
         return JsonResponse(user_data)
+
     elif request.method == 'POST':
-        data = json.loads(request.body)
-        user.email = data.get('email', user.email)
-        user.birth_date = data.get('birth_date', user.birth_date)
+        user.email = request.POST.get('email', user.email)
+        user.birth_date = request.POST.get('birth_date', user.birth_date)
+        profile_image = request.FILES.get('profile_image')
+        if profile_image:
+            user.profile_image.save(profile_image.name, profile_image)
         user.save()
         return JsonResponse({'message': 'Profile updated successfully'})
     else:
