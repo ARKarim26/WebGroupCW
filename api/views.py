@@ -5,6 +5,9 @@ from django.shortcuts import get_object_or_404
 from .models import Article, Comment, User, Category
 from django.views.decorators.csrf import csrf_exempt
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 def main_spa(request):
     return HttpResponse('Main SPA Page')
@@ -82,11 +85,12 @@ def articles_by_category(request, category_id):
     return JsonResponse({'articles': articles}, safe=False)
 
 @csrf_exempt
-@login_required
 def user_profile(request):
     user = request.user
+    logger.info(f"Profile request for user: {user.username}")
 
     if request.method == 'GET':
+        # Assuming 'favorite_categories' is a field in your user model
         favorite_categories_ids = user.favorite_categories.values_list('id', flat=True)
         user_data = {
             'username': user.username,
