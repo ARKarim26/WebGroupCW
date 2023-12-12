@@ -1,19 +1,24 @@
 <template>
+<div class="container mt-5">
   <div v-if="article">
-    <h2>{{ article.title }}</h2>
-    <p>{{ article.content }}</p>
-    <p>Author: {{ article.author }}</p> <!-- Display the author -->
+    <h2 class="mb-3">{{ article.title }}</h2>
+    <p class="lead">{{ article.content }}</p>
+    <p class="lead">Author: {{ article.author }}</p>
+
+    <div class="mb-3">
     <h3>Comments</h3>
-    <ul v-if="article.comments && article.comments.length > 0">
+    <ul v-if="article.comments && article.comments.length > 0" class="list-unstyled">
       <li v-for="comment in article.comments" :key="comment.id">
         {{ comment.content }} - by {{ comment.author }}
       </li>
     </ul>
     <p v-else>No comments yet.</p>
   </div>
-  <div v-else>
-    <p>Article not found or loading...</p>
   </div>
+  <div v-else>
+    <p class="lead">Article not found or loading...</p>
+  </div>
+</div>
 </template>
 
 <script lang="ts">
