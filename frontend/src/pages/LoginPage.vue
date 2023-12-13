@@ -1,19 +1,21 @@
 <template>
-  <div>
+  <div class="container mt-5">
     <h3>Login</h3>
     <form @submit.prevent="login">
-      <div>
+      <div class="form-group">
         <label for="username">Username:</label>
-        <input type="text" id="username" v-model="username" required>
+        <input type="text" id="username" class="form-control" v-model="username" required>
       </div>
-      <div>
+      <div class="form-group">
         <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required>
+        <input type="password" id="password" class="form-control" v-model="password" required>
       </div>
-      <button type="submit">Login</button>
+      <br>
+      <button type="submit" class="btn btn-primary">Login</button>
     </form>
   </div>
 </template>
+
 
 <script lang="ts">
   import { defineComponent, ref } from "vue";

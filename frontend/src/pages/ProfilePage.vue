@@ -1,43 +1,57 @@
 <template>
+  <div class="container profile-container mt-5">
   <div class="profile-container">
-    <h1>Profile Page</h1>
+    <h1 class="mb-4">Profile Page</h1>
     <div v-if="userStore.isLoggedIn">
-      <h2>My Details</h2>
-      <p>Email: {{ email }}</p>
-      <p>Birth Date: {{ birthDate }}</p>
-      <img v-if="profileImageUrl" :src="profileImageUrl" alt="Current Profile Image" />
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">My Details</h2>
+          <p class="card-text"><strong>Email:</strong> {{ email }}</p>
+          <p class="card-text"><strong>Birth Date:</strong> {{ birthDate }}</p>
+          
+          <img v-if="profileImageUrl" :src="profileImageUrl" alt="Current Profile Image" class="img-fluid mb-3" />
 
-      <h2>Update Details</h2>
-      <form @submit.prevent="updateProfile">
-        <div>
-          <label for="email">New Email:</label>
-          <input type="email" v-model="email" id="email">
-        </div>
-        <div>
-          <label for="birthDate">New Birth Date:</label>
-          <input type="date" v-model="birthDate" id="birthDate">
-        </div>
-        <div>
-          <label for="profileImage">New Profile Image:</label>
-          <input type="file" @change="handleFileChange" id="profileImage">
-          <img v-if="profileImageUrl" :src="profileImageUrl" alt="New Profile Image" />
-        </div>
-        <div>
-          <label for="favoriteCategories">Favorite Categories:</label>
-          <select id="favoriteCategories" v-model="selectedCategories" multiple>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
+          <h2 class="card-title">Update Details</h2>
+          
+          <form @submit.prevent="updateProfile">
+            <div class="form-group">
+              <label for="email">New Email:</label>
+              <input type="email" v-model="email" id="email" class="form-control">
+            </div>
+            <br>
+            <div class="form-group">
+              <label for="birthDate">New Birth Date:</label>
+              <input type="date" v-model="birthDate" id="birthDate" class="form-control">
+            </div>
+            <br>
+            <div class="form-group">
+              <label for="profileImage">New Profile Image: &nbsp</label>
+              <input type="file" @change="handleFileChange" id="profileImage" class="form-control-file">
+          
+              <img v-if="profileImageUrl" :src="profileImageUrl" alt="New Profile Image"  class="img-fluid mt-3" />
+            </div>
+            <br>
+         <div class="form-group">
+              <label for="favoriteCategories">Favorite Categories:</label>
+              <select id="favoriteCategories" v-model="selectedCategories" multiple class="form-control">
+                <option v-for="category in categories" :key="category.id" :value="category.id">
               {{ category.name }}
             </option>
           </select>
         </div>
-        <button type="submit">Update Profile</button>
+        <br>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
       </form>
-      <button @click="logout">Logout</button>
-    </div>
-    <div v-else>
-      <p>Please <router-link to="/login">login</router-link> to view your profile.</p>
+      <button @click="logout" class="btn btn-danger mt-3">Logout</button>
     </div>
   </div>
+</div>
+<div v-else>
+  <p>Please <router-link to="/login">login</router-link> to view your profile.</p>
+</div>
+</div>
+</div>
+
 </template>
 
 <script lang="ts">

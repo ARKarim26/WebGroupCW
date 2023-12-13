@@ -1,30 +1,38 @@
 <template>
+  <div class="container register-container mt-5">
   <div class="register-container">
-    <h1>Register</h1>
+    <h1 class="mb-4">Register</h1>
     <form @submit.prevent="registerUser">
-      <div>
+      <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" id="username" v-model="username" placeholder="Username" required />
+        <input type="text" id="username" v-model="username" placeholder="Username" class="form-control" required />
       </div>
-      <div>
+      <br>
+      <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" placeholder="Password" required />
+        <input type="password" id="password" v-model="password" placeholder="Password" class="form-control" required />
       </div>
-      <div>
+      <br>
+      <div class="form-group">
         <label for="passwordConfirm">Confirm Password</label>
-        <input type="password" id="passwordConfirm" v-model="passwordConfirm" placeholder="Confirm Password" required />
+        <input type="password" id="passwordConfirm" v-model="passwordConfirm" placeholder="Confirm Password" class="form-control" required />
       </div>
-      <div>
+      <br>
+      <div class="form-group">
         <label for="birthDate">Birth Date</label>
-        <input type="date" id="birthDate" v-model="birthDate" />
+        <input type="date" id="birthDate" v-model="birthDate" class="form-control" />
       </div>
-      <div>
-        <label for="profileImage">Profile Image</label>
-        <input type="file" id="profileImage" @change="onFileChange" />
+      <br>
+      <div class="form-group">
+        <label for="profileImage">Profile Image &nbsp</label>
+        <input type="file" id="profileImage" @change="onFileChange" class="form-control-file"  />
       </div>
-      <button type="submit">Register</button>
-      <p v-if="errorMessage">{{ errorMessage }}</p>
+      <br>
+      <br>
+      <button type="submit" class="btn btn-primary">Register</button>
+      <p v-if="errorMessage" class="mt-2 text-danger">{{ errorMessage }}</p>
     </form>
+  </div>
   </div>
 </template>
 
