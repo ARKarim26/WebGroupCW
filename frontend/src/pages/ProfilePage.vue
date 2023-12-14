@@ -68,6 +68,7 @@ export default defineComponent({
   setup() {
     const userStore = useUserStore();
     const router = useRouter();
+    const username = ref('');
     const email = ref('');
     const birthDate = ref('');
     const profileImageInput = ref<File | null>(null);
@@ -93,6 +94,7 @@ export default defineComponent({
         if (!response.ok) throw new Error('Failed to fetch profile data');
         const profileData = await response.json();
 
+        username.value = profileData.username;
         email.value = profileData.email;
         birthDate.value = profileData.birth_date;
         profileImageUrl.value = profileData.profile_image;
@@ -162,7 +164,7 @@ export default defineComponent({
     };
 
     return {
-      email, birthDate, profileImageInput, profileImageUrl, updateProfile, handleFileChange, logout, userStore, categories, selectedCategories
+      username, email, birthDate, profileImageInput, profileImageUrl, updateProfile, handleFileChange, logout, userStore, categories, selectedCategories
     };
   },
 });
