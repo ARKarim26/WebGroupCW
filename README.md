@@ -13,6 +13,26 @@
 4. A J Kaviyen Brayan Jeyabharathan - Creation of Article Content and Categories, ReadME File
 
 ## Admin Username + Password
+username : admin
+password : admin 
 
 ## 5 Created Usernames + Passwords
-  
+user 1: 
+username: athish
+password: athish
+
+user 2:
+username: amaan
+password: amaan
+
+user 3:
+username: kav
+password: kav
+
+user 4:
+username: fareza
+password: fareza
+
+user 5:
+username: zain
+password: zain 
